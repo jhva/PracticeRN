@@ -5,3 +5,7 @@
 onFinish props 
 startAsync는 
 프로미스가 resolve되거나 종료됐을때 promise를 반환해주는 함수 
+
+# Navigation
+
+2.5 Tab Navigation
