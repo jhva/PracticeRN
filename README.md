@@ -28,3 +28,11 @@ toLocalDateString("ko",{month:"long",day:"numberic"}) => '9월 21일'
 toLocalDateString("ko",{month:"long",day:"numberic",year:"numberic}) => '2021년 9월 21일'
 
 # ScrollView 는 모든 자식 컴포넌트를 한번에 렌더링함
+
+# react query
+
+caching 은 데이터가 한번 fetch한번 다시 fetch를 안하게함
+
+## QueryClient
+
+-cache에 접근할수있는 방법

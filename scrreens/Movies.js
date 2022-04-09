@@ -18,8 +18,9 @@ import Slide from "../components/Slides";
 import Poster from "../components/Poster";
 import HMedia from "../components/HMedia";
 import VMedia from "../components/VMedia";
-import { useQuery } from "react-query";
+import { QueryClient, useQuery, useQueryClient } from "react-query";
 import { moviesApi } from "../api";
+import Loader from "../components/Loader";
 
 const TrendingScroll = styled.FlatList`
   margin-top: 20px;
@@ -37,11 +38,7 @@ const HColumn = styled.View`
   width: 80%;
 `;
 const Container = styled.ScrollView``;
-const Loader = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
+
 const Movie = styled.View`
   margin-right: 30px;
   align-items: center;
@@ -86,22 +83,26 @@ const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const Movies = () => {
   const [refreshing, setRefreshing] = useState(false);
 
-  const { isLoading: nowPlayingLoading, data: nowPlayingData } = useQuery(
-    "nowPlaying",
-    moviesApi.nowPlaying
-  );
-  const { isLoading: upcomingLoading, data: upcomingData } = useQuery(
-    "upcoming",
-    moviesApi.upcoming
-  );
-  const { isLoading: trendingLoading, data: trendingData } = useQuery(
-    "trending",
-    moviesApi.trending
-  );
+  const queryClient = useQueryClient();
+  const {
+    isLoading: nowPlayingLoading,
+    data: nowPlayingData,
+    isRefetching: isRefetchingNowPlaying,
+  } = useQuery(["movies", "nowPlaying"], moviesApi.nowPlaying);
+  const {
+    isLoading: upcomingLoading,
+    data: upcomingData,
+    isRefetching: isRefetchingUpcoming,
+  } = useQuery(["movies", "upcoming"], moviesApi.upcoming);
+  const {
+    isLoading: trendingLoading,
+    data: trendingData,
+    isRefetching: isRefetchingTrending,
+  } = useQuery(["movies", "trending"], moviesApi.trending);
   const onRefresh = async () => {
-    // setRefreshing(true);
-    // await getData();
-    // setRefreshing(false);
+    setRefreshing(true);
+    await QueryClient.refetchQueries(["movies"]);
+    setRefreshing(false);
   };
 
   // const renderVMedia = ({ item }) => {
@@ -122,10 +123,11 @@ const Movies = () => {
   // };
   const movieKeyExtractor = (item) => item.id + "";
   const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
+  // const refreshing =
+  //   isRefetchingNowPlaying || isRefetchingUpcoming || isRefetchingTrending;
+
   return loading ? (
-    <Loader>
-      <ActivityIndicator size="small" />
-    </Loader>
+    <Loader />
   ) : (
     <FlatList
       onRefresh={onRefresh}

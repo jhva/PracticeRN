@@ -19,22 +19,21 @@ const Tabs = () => {
       sceneContainerStyle={{
         backgroundColor: isDark ? BLACK_COLOR : "white",
       }}
-      screenOptions={
-        {
-          // tabBarStyle: { backgroundColor: isDark ? BLACK_COLOR : "white" },
-          // tabBarActiveTintColor: isDark ? YELLOW_COLOR : BLACK_COLOR,
-          // tabBarInactiveTintColor: isDark ? "#d2dae2" : "#808e9b",
-          // headerStyle: {
-          //   backgroundColor: isDark ? BLACK_COLOR : "white",
-          // },
-          // headerTitleStyle: {
-          //   color: isDark ? "white" : BLACK_COLOR,
-          // },
-          // tabBarLabelPosition: "beside-icon",
-          // tabBarStyle: { backgroundColor: "tomato" },
-          // tabBarActiveTintColor: "red",
-        }
-      }
+      screenOptions={{
+        unmountOnBlur: true,
+        // tabBarStyle: { backgroundColor: isDark ? BLACK_COLOR : "white" },
+        // tabBarActiveTintColor: isDark ? YELLOW_COLOR : BLACK_COLOR,
+        // tabBarInactiveTintColor: isDark ? "#d2dae2" : "#808e9b",
+        // headerStyle: {
+        //   backgroundColor: isDark ? BLACK_COLOR : "white",
+        // },
+        // headerTitleStyle: {
+        //   color: isDark ? "white" : BLACK_COLOR,
+        // },
+        // tabBarLabelPosition: "beside-icon",
+        // tabBarStyle: { backgroundColor: "tomato" },
+        // tabBarActiveTintColor: "red",
+      }}
       initialRouteName="Moviess"
     >
       <Tab.Screen
