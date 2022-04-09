@@ -1,9 +1,15 @@
 import React from "react";
 import styled from "styled-components/native";
-import { View, StyleSheet, useColorScheme } from "react-native";
+import {
+  View,
+  StyleSheet,
+  useColorScheme,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { makeImgPath } from "../utils";
 import { BlurView } from "expo-blur";
 import Poster from "./Poster";
+import { useNavigation } from "@react-navigation/native";
 const BgImg = styled.Image`
   width: 100%;
   height: 100%;
@@ -42,25 +48,40 @@ const Slide = ({
   vote_average,
 }) => {
   const isDark = useColorScheme() === "dark";
-
+  const navigation = useNavigation();
+  const goToDetail = () => {
+    navigation.navigate("Stack", {
+      screen: "Detail",
+      params: {
+        original_title,
+      },
+    });
+  };
   return (
-    <View style={{ flex: 1 }}>
-      <BgImg source={{ url: makeImgPath(backdrop_path) }} />
-      <BlurView
-        tint={isDark ? "dark" : "light"}
-        intensity={95}
-        style={StyleSheet.absoluteFill}
-      >
-        <Wrapper>
-          <Poster path={poster_path} />
-          <Column>
-            <Tilte>{original_title}</Tilte>
-            <Overview>{overview.slice(0, 90)}...</Overview>
-            {vote_average > 0 ? <Votes>⭐️{vote_average}/10</Votes> : null}
-          </Column>
-        </Wrapper>
-      </BlurView>
-    </View>
+    <TouchableWithoutFeedback onPress={goToDetail}>
+      <View style={{ flex: 1 }}>
+        <BgImg
+          style={StyleSheet.absoluteFill}
+          source={{ uri: makeImgPath(backdrop_path) }}
+        />
+        <BlurView
+          tint={isDark ? "dark" : "light"}
+          intensity={85}
+          style={StyleSheet.absoluteFill}
+        >
+          <Wrapper>
+            <Poster path={poster_path} />
+            <Column>
+              <Tilte isDark={isDark}>{original_title}</Tilte>
+              {vote_average > 0 ? (
+                <Votes isDark={isDark}>⭐️ {vote_average}/10</Votes>
+              ) : null}
+              <Overview isDark={isDark}>{overview.slice(0, 100)}...</Overview>
+            </Column>
+          </Wrapper>
+        </BlurView>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
