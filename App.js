@@ -14,6 +14,9 @@ import {
 import Tabs from "./navigation/Tabs";
 import Stack from "./navigation/Stack";
 import Root from "./navigation/Root";
+import { QueryCache, QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
 
 const loadFonts = (fonts) => fonts.map((font) => Font.loadAsync(font));
 const loadImages = (images) =>
@@ -35,7 +38,7 @@ export default function App() {
       "https://reactnative.dev/img/oss_logo.png",
     ]);
     await Promise.all([...fonts, ...images]);
-    console.log(images);
+    // console.log(images);
   };
   const isDark = useColorScheme() === "dark";
 
@@ -49,10 +52,12 @@ export default function App() {
     );
   }
   return (
-    <NavigationContainer theme={isDark ? DarkTheme : DefaultTheme}>
-      <Root />
-      {/* <Tabs /> */}
-      {/* <Stack /> */}
-    </NavigationContainer>
+    <QueryClientProvider client={queryClient}>
+      <NavigationContainer theme={isDark ? DarkTheme : DefaultTheme}>
+        <Root />
+        {/* <Tabs /> */}
+        {/* <Stack /> */}
+      </NavigationContainer>
+    </QueryClientProvider>
   );
 }

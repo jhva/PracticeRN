@@ -42,7 +42,7 @@ const Tabs = () => {
         component={Movies}
         options={{
           tabBarIcon: ({ focused, color, size }) => {
-            console.log(focused, color, size);
+            // console.log(focused, color, size);
             return <Ionicons name="film" color={color} size={size} />;
           },
         }}
@@ -67,7 +67,7 @@ const Tabs = () => {
       <Tab.Screen
         options={{
           tabBarIcon: ({ focused, color, size }) => {
-            console.log(focused, color, size);
+            // console.log(focused, color, size);
             return <Ionicons name="search" color={color} size={size} />;
           },
         }}

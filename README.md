@@ -17,3 +17,14 @@ react-navigation/bottom-tabs@6.0.5
 screenOption 은 모든 스크린의 공통적으로 적용할할수있는 스타일을 할 수 있고
 
 options는 하나의 스크린에서만 바꿀수있도록 해줄수있다
+
+# 새롭게알게된 함수
+
+-ex) new Date("2021-09-21").toLocalDateString("ko")
+output: "2021.9.21 "
+
+toLocalDateString("ko",{month:"long"}) => '9월'
+toLocalDateString("ko",{month:"long",day:"numberic"}) => '9월 21일'
+toLocalDateString("ko",{month:"long",day:"numberic",year:"numberic}) => '2021년 9월 21일'
+
+# ScrollView 는 모든 자식 컴포넌트를 한번에 렌더링함

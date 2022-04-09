@@ -8,14 +8,33 @@ import {
   StyleSheet,
   useColorScheme,
   ScrollView,
+  View,
+  RefreshControl,
+  FlatList,
 } from "react-native";
 import { makeImgPath } from "../utils";
 import { BlurView } from "expo-blur";
 import Slide from "../components/Slides";
 import Poster from "../components/Poster";
+import HMedia from "../components/HMedia";
+import VMedia from "../components/VMedia";
+import { useQuery } from "react-query";
+import { moviesApi } from "../api";
 
-const TrendingScroll = styled.ScrollView`
+const TrendingScroll = styled.FlatList`
   margin-top: 20px;
+`;
+const ListContainer = styled.View`
+  margin-bottom: 40px;
+`;
+const HMovie = styled.View`
+  padding: 0px 30px;
+  margin-bottom: 30px;
+  flex-direction: row;
+`;
+const HColumn = styled.View`
+  margin-left: 15px;
+  width: 80%;
 `;
 const Container = styled.ScrollView``;
 const Loader = styled.View`
@@ -37,110 +56,139 @@ const Votes = styled.Text`
   color: rgba(255, 255, 255, 0.8);
   font-size: 10px;
 `;
-
-const API_KEY = "7a16f91146840c4d3a87f8a771f9239a";
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+const Overview = styled.Text`
+  color: white;
+  opacity: 0.8;
+  width: 80%;
+`;
+const Release = styled.Text`
+  color: white;
+  margin-vertical: 10px;
+  font-size: 12px;
+`;
 const ListTitle = styled.Text`
   color: white;
   font-size: 15px;
   font-weight: 600;
   margin-left: 20px;
 `;
+const ComingSoonTitle = styled(ListTitle)`
+  margin-bottom: 30px;
+`;
+const VSeparator = styled.View`
+  width: 20px;
+`;
+const HSeparator = styled.View`
+  width: 20px;
+`;
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+
 const Movies = () => {
-  const [loading, setLoading] = useState(true);
-  const [nowPlayingMovies, setNowPlayingMovies] = useState([]);
-  const [upcoming, setUpcoming] = useState([]);
-  const [trending, setTrending] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const getData = async () => {
-    await Promise.all([getTrending(), getUpcomming(), getNowPlaying()]);
-    setLoading(false);
-  };
-  const getTrending = async () => {
-    const { results } = await (
-      await fetch(
-        `https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}`
-      )
-    ).json();
-    setTrending(results);
-  };
-  const getUpcomming = async () => {
-    const { results } = await (
-      await fetch(
-        `https://api.themoviedb.org/3/movie/upcomming?api_key=${API_KEY}&language=en-US&page=1&region=KR`
-      )
-    ).json();
-    setUpcoming(results);
-  };
-  const getNowPlaying = async () => {
-    const { results } = await (
-      await fetch(
-        `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=en-US&page=1&region=KR`
-      )
-    ).json();
-    setNowPlayingMovies(results);
-
-    console.log(results, "ee");
+  const { isLoading: nowPlayingLoading, data: nowPlayingData } = useQuery(
+    "nowPlaying",
+    moviesApi.nowPlaying
+  );
+  const { isLoading: upcomingLoading, data: upcomingData } = useQuery(
+    "upcoming",
+    moviesApi.upcoming
+  );
+  const { isLoading: trendingLoading, data: trendingData } = useQuery(
+    "trending",
+    moviesApi.trending
+  );
+  const onRefresh = async () => {
+    // setRefreshing(true);
+    // await getData();
+    // setRefreshing(false);
   };
 
+  // const renderVMedia = ({ item }) => {
+  //   <VMedia
+  //     posterPath={item.poster_path}
+  //     originalTitle={item.original_title}
+  //     voteAverage={item.vote_average}
+  //   />;
+  // };
+
+  // const renderHmedia = ({ item }) => {
+  //   <HMedia
+  //     posterPath={item.poster_path}
+  //     originalTitle={item.original_title}
+  //     overview={item.overview}
+  //     releaseDate={item.release_date}
+  //   />;
+  // };
+  const movieKeyExtractor = (item) => item.id + "";
+  const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
   return loading ? (
     <Loader>
       <ActivityIndicator size="small" />
     </Loader>
   ) : (
-    <Container>
-      <Swiper
-        horizontal
-        loop
-        autoplayTimeout={3.5}
-        showsButtons={false}
-        autoplay
-        timeout={3.5}
-        showsPagination={false}
-        controlsEnabled={false}
-        containerStyle={{
-          marginBottom: 15,
-          width: "100%",
-          height: SCREEN_HEIGHT / 4,
-        }}
-      >
-        {/* <View style={{ backgroundColor: "red" }}></View>
-        <View style={{ backgroundColor: "blue" }}></View>
-        <View style={{ backgroundColor: "red" }}></View>
-        <View style={{ backgroundColor: "blue" }}></View> */}
-        {nowPlayingMovies.map((movie) => (
-          <Slide
-            key={movie.id}
-            backdrop_path={movie.backdrop_path}
-            poster_path={movie.poster_path}
-            original_title={movie.original_title}
-            overview={movie.overview}
-            vote_average={movie.vote_average}
-          />
-        ))}
-      </Swiper>
-      <ListTitle>Tendinddg Movies</ListTitle>
-      <TrendingScroll
-        contentContainerstyle={{ paddingLeft: 30 }}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-      >
-        {trending.map((movie) => (
-          <Movie key={movie.id}>
-            <Poster path={movie.poster_path} />
-            <Title>
-              {movie.original_title.slice(0, 13)}
-              {movie.original_title.length > 13 ? "..." : null}
-            </Title>
-            <Votes>⭐️{movie.vote_average}/10</Votes>
-          </Movie>
-        ))}
-      </TrendingScroll>
-    </Container>
+    <FlatList
+      onRefresh={onRefresh}
+      refreshing={refreshing}
+      ListHeaderComponent={
+        <>
+          <Swiper
+            horizontal
+            loop
+            autoplay
+            autoplayTimeout={3.5}
+            showsButtons={false}
+            showsPagination={false}
+            containerStyle={{
+              marginBottom: 40,
+              width: "100%",
+              height: SCREEN_HEIGHT / 4,
+            }}
+          >
+            {nowPlayingData?.results?.map((movie) => (
+              <Slide
+                key={movie.id}
+                backdropPath={movie.backdrop_path}
+                posterPath={movie.poster_path}
+                originalTitle={movie.original_title}
+                voteAverage={movie.vote_average}
+                overview={movie.overview}
+              />
+            ))}
+          </Swiper>
+          <ListContainer>
+            <ListTitle>Trending Movies</ListTitle>
+            <TrendingScroll
+              data={trendingData?.results}
+              horizontal
+              keyExtractor={(item) => item.id + ""}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 30 }}
+              ItemSeparatorComponent={VSeparator}
+              renderItem={({ item }) => (
+                <VMedia
+                  posterPath={item.poster_path}
+                  originalTitle={item.original_title}
+                  voteAverage={item.vote_average}
+                />
+              )}
+            />
+          </ListContainer>
+          <ComingSoonTitle>Coming soon</ComingSoonTitle>
+        </>
+      }
+      data={upcomingData?.results}
+      keyExtractor={(item) => item.id + ""}
+      ItemSeparatorComponent={HSeparator}
+      renderItem={({ item }) => (
+        <HMedia
+          posterPath={item.poster_path}
+          originalTitle={item.original_title}
+          overview={item.overview}
+          releaseDate={item.release_date}
+        />
+      )}
+    />
   );
 };
 export default Movies;
