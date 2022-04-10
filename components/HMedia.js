@@ -40,6 +40,7 @@ const HMedia = ({
   originalTitle,
   overview,
   releaseDate,
+  fullData,
   voteAverage,
 }) => {
   const navigation = useNavigation();
@@ -47,7 +48,7 @@ const HMedia = ({
     navigation.navigate("Stack", {
       screen: "Detail",
       params: {
-        originalTitle,
+        ...fullData,
       },
     });
   };

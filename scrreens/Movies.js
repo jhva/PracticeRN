@@ -155,6 +155,7 @@ const Movies = () => {
                 originalTitle={movie.original_title}
                 voteAverage={movie.vote_average}
                 overview={movie.overview}
+                fullData={movie}
               />
             ))}
           </Swiper>
@@ -169,6 +170,7 @@ const Movies = () => {
               ItemSeparatorComponent={VSeparator}
               renderItem={({ item }) => (
                 <VMedia
+                  fullData={item}
                   posterPath={item.poster_path}
                   originalTitle={item.original_title}
                   voteAverage={item.vote_average}
@@ -184,6 +186,7 @@ const Movies = () => {
       ItemSeparatorComponent={HSeparator}
       renderItem={({ item }) => (
         <HMedia
+          fullData={item}
           posterPath={item.poster_path}
           originalTitle={item.original_title}
           overview={item.overview}
