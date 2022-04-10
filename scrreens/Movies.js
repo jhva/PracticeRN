@@ -18,7 +18,12 @@ import Slide from "../components/Slides";
 import Poster from "../components/Poster";
 import HMedia from "../components/HMedia";
 import VMedia from "../components/VMedia";
-import { QueryClient, useQuery, useQueryClient } from "react-query";
+import {
+  QueryClient,
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "react-query";
 import { moviesApi } from "../api";
 import Loader from "../components/Loader";
 
@@ -93,7 +98,15 @@ const Movies = () => {
     isLoading: upcomingLoading,
     data: upcomingData,
     isRefetching: isRefetchingUpcoming,
-  } = useQuery(["movies", "upcoming"], moviesApi.upcoming);
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(["movies", "upcoming"], moviesApi.upcoming, {
+    getNextPageParam: (currentPage) => {
+      const nextPage = currentPage + 1;
+
+      return nextPage > currentPage.total_pages ? null : currentPage.page + 1;
+    },
+  });
   const {
     isLoading: trendingLoading,
     data: trendingData,
@@ -104,6 +117,7 @@ const Movies = () => {
     await QueryClient.refetchQueries(["movies"]);
     setRefreshing(false);
   };
+  // console.log(upcomingData.pages);
 
   // const renderVMedia = ({ item }) => {
   //   <VMedia
@@ -125,11 +139,16 @@ const Movies = () => {
   const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
   // const refreshing =
   //   isRefetchingNowPlaying || isRefetchingUpcoming || isRefetchingTrending;
-
+  const loadMore = () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  };
   return loading ? (
     <Loader />
   ) : (
     <FlatList
+      onEndReached={loadMore}
       onRefresh={onRefresh}
       refreshing={refreshing}
       ListHeaderComponent={
@@ -181,7 +200,7 @@ const Movies = () => {
           <ComingSoonTitle>Coming soon</ComingSoonTitle>
         </>
       }
-      data={upcomingData?.results}
+      data={upcomingData.pages.map((page) => page.results).flat()}
       keyExtractor={(item) => item.id + ""}
       ItemSeparatorComponent={HSeparator}
       renderItem={({ item }) => (

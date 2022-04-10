@@ -36,3 +36,12 @@ caching 은 데이터가 한번 fetch한번 다시 fetch를 안하게함
 ## QueryClient
 
 -cache에 접근할수있는 방법
+
+# navigation state
+
+# infinite Scrolling
+
+-flatList props => onEndReached
+
+- infinite Queries =>React Query
+-flat()이라는 함수는 배열안에있는 것들을 전부 배열 밖으로 꺼내는것
